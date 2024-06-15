@@ -6,6 +6,15 @@ from textwrap import dedent
 from crewai import Agent
 from .tools import CreateDraftTool
 
+from langchain_openai import AzureChatOpenAI
+import os
+
+llm = AzureChatOpenAI(
+    azure_deployment=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
+    openai_api_version=os.environ["AZURE_OPENAI_API_VERSION"],
+    temperature=0
+)
+
 class EmailFilterAgents():
 	def __init__(self):
 		self.gmail = GmailToolkit()
@@ -20,7 +29,8 @@ class EmailFilterAgents():
 				irrelevant content. Your expertise lies in identifying key patterns and markers that
 				signify the importance of an email."""),
 			verbose=True,
-			allow_delegation=False
+			allow_delegation=False,
+			llm=llm
 		)
 
 	def email_action_agent(self):
@@ -38,6 +48,7 @@ class EmailFilterAgents():
 			],
 			verbose=True,
 			allow_delegation=False,
+			llm=llm
 		)
 
 	def email_response_writer(self):
@@ -55,4 +66,5 @@ class EmailFilterAgents():
 			],
 			verbose=True,
 			allow_delegation=False,
+			llm=llm
 		)

@@ -7,6 +7,20 @@ from tools.sec_tools import SECTools
 
 from langchain.tools.yahoo_finance_news import YahooFinanceNewsTool
 
+from dotenv import load_dotenv
+load_dotenv()
+
+
+from langchain_openai import AzureChatOpenAI
+import os
+
+llm = AzureChatOpenAI(
+    azure_deployment=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
+    openai_api_version=os.environ["AZURE_OPENAI_API_VERSION"],
+    temperature=0
+)
+
+
 class StockAnalysisAgents():
   def financial_analyst(self):
     return Agent(
@@ -23,7 +37,8 @@ class StockAnalysisAgents():
         CalculatorTools.calculate,
         SECTools.search_10q,
         SECTools.search_10k
-      ]
+      ],
+      llm=llm
     )
 
   def research_analyst(self):
@@ -43,7 +58,8 @@ class StockAnalysisAgents():
         YahooFinanceNewsTool(),
         SECTools.search_10q,
         SECTools.search_10k
-      ]
+      ],
+      llm=llm
   )
 
   def investment_advisor(self):
@@ -62,5 +78,6 @@ class StockAnalysisAgents():
         SearchTools.search_news,
         CalculatorTools.calculate,
         YahooFinanceNewsTool()
-      ]
+      ],
+      llm=llm
     )
